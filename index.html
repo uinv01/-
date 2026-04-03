@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <title>مولد الكيو آر كود للأسماء</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; text-align: center; background: #f4f4f9; padding: 20px; }
+        .no-print { margin-bottom: 20px; }
+        textarea { width: 80%; height: 150px; font-size: 16px; padding: 10px; border-radius: 8px; border: 1px solid #ccc; }
+        .btn-green { background: #28a745; color: white; border: none; padding: 12px 25px; font-size: 18px; cursor: pointer; margin: 10px 5px; border-radius: 5px; font-weight: bold; }
+        .btn-green:hover { background: #218838; }
+        .btn-blue { background: #007bff; color: white; border: none; padding: 12px 25px; font-size: 18px; cursor: pointer; margin: 10px 5px; border-radius: 5px; font-weight: bold; }
+        .btn-blue:hover { background: #0069d9; }
+        
+        /* التعديل هنا: جعل العرض عامودي وتوسيط العناصر */
+        #output { display: flex; flex-direction: column; align-items: center; margin-top: 20px; gap: 15px; }
+        
+        .qr-card { background: white; border: 2px solid #ddd; padding: 15px; border-radius: 10px; width: 160px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); display: flex; flex-direction: column; align-items: center; }
+        .qr-card img { width: 150px; height: 150px; }
+        .qr-card p { margin: 15px 0 0 0; font-size: 16px; font-weight: bold; word-wrap: break-word; text-align: center; color: #333; }
+        
+        /* إخفاء الأزرار ومربع النص عند الطباعة */
+        @media print {
+            body { background: white; }
+            .no-print { display: none; }
+            .qr-card { box-shadow: none; border: 1px solid #000; page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print">
+        <h2>أداة توليد QR Code للأسماء دفعة واحدة</h2>
+        <p>قم بنسخ الأسماء (كل اسم في سطر) والصقها في المربع أدناه:</p>
+        <textarea id="namesInput" placeholder="الصق الأسماء هنا..."></textarea><br>
+        <button class="btn-green" onclick="generateQRs()">توليد الأكواد الآن</button>
+        <button class="btn-blue" onclick="window.print()">طباعة / حفظ كـ PDF</button>
+    </div>
+    <div id="output"></div>
+
+    <script>
+        function generateQRs() {
+            const input = document.getElementById('namesInput').value;
+            // تقسيم النص إلى أسطر وتصفية الأسطر الفارغة
+            const names = input.split('\n').map(name => name.trim()).filter(name => name !== '');
+            const outputDiv = document.getElementById('output');
+            outputDiv.innerHTML = ''; // تفريغ المحتوى السابق لتوليد جديد
+
+            if(names.length === 0) {
+                alert("يرجى لصق الأسماء أولاً في المربع!");
+                return;
+            }
+
+            names.forEach(name => {
+                // إنشاء البطاقة لكل اسم
+                const card = document.createElement('div');
+                card.className = 'qr-card';
+
+                // إنشاء صورة الكيو آر كود
+                const img = document.createElement('img');
+                // نستخدم API مجاني وسريع لتوليد الكود
+                img.src = "https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=" + encodeURIComponent(name);
+                img.alt = name;
+
+                // إنشاء النص (اسم الطالب)
+                const text = document.createElement('p');
+                text.textContent = name;
+
+                // إضافة الصورة والنص داخل البطاقة
+                card.appendChild(img);
+                card.appendChild(text);
+
+                // إضافة البطاقة إلى الشاشة
+                outputDiv.appendChild(card);
+            });
+        }
+    </script>
+</body>
+</html>
